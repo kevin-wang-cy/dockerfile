@@ -1,16 +1,17 @@
 FROM alpine:3.5
 
-MAINTAINER Kevin Wang <kevin.wang.cy@gmail.com>
+MAINTAINER mritd <mritd@mritd.me>
 
 ENV TZ 'Asia/Shanghai'
 
-ENV SS_LIBEV_VERSION 3.0.6
+ENV SS_LIBEV_VERSION 2.6.3
 
 ENV KCP_VERSION 20170329 
 
 RUN apk upgrade --no-cache \
     && apk add --no-cache bash tzdata libsodium \
     && apk add --no-cache --virtual .build-deps \
+	asciidoc \
         autoconf \
         build-base \
         curl \
@@ -23,6 +24,9 @@ RUN apk upgrade --no-cache \
         pcre-dev \
         tar \
         udns-dev \
+        zlib-dev \
+	openssl-dev \
+	xmlto \
     && curl -sSLO https://github.com/shadowsocks/shadowsocks-libev/releases/download/v$SS_LIBEV_VERSION/shadowsocks-libev-$SS_LIBEV_VERSION.tar.gz \
     && tar -zxf shadowsocks-libev-$SS_LIBEV_VERSION.tar.gz \
     && cd shadowsocks-libev-$SS_LIBEV_VERSION \
@@ -30,8 +34,7 @@ RUN apk upgrade --no-cache \
     && make install && cd ../ \
     && curl -sSLO https://github.com/xtaci/kcptun/releases/download/v$KCP_VERSION/kcptun-linux-amd64-$KCP_VERSION.tar.gz \
     && tar -zxf kcptun-linux-amd64-$KCP_VERSION.tar.gz \
-    && mv server_linux_amd64 /usr/bin/kcptun-server \
-    && mv client_linux_amd64 /usr/bin/kcptun-client \
+    && mv server_linux_amd64 /usr/bin/kcptun \
     && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
     && echo "Asia/Shanghai" > /etc/timezone \
     && runDeps="$( \
@@ -42,7 +45,8 @@ RUN apk upgrade --no-cache \
         )" \
     && apk add --no-cache --virtual .run-deps $runDeps \
     && apk del .build-deps \
-    && rm -rf kcptun-linux-amd64-$KCP_VERSION.tar.gz \
+    && rm -rf client_linux_amd64 \
+        kcptun-linux-amd64-$KCP_VERSION.tar.gz \
         shadowsocks-libev-$SS_LIBEV_VERSION.tar.gz \
         shadowsocks-libev-$SS_LIBEV_VERSION \
         /var/cache/apk/*

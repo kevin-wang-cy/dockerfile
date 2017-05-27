@@ -2,15 +2,18 @@
 
 SS_CONFIG=${SS_CONFIG:-""}
 SS_MODULE=${SS_MODULE:-"ss-server"}
+KCP_MODULE=${KCP_MODULE:-"kcptun-server"}
 KCP_CONFIG=${KCP_CONFIG:-""}
 KCP_FLAG=${KCP_FLAG:-"false"}
 
-while getopts "s:m:k:x" OPT; do
+while getopts "s:m:n:k:x" OPT; do
     case $OPT in
         s)
             SS_CONFIG=$OPTARG;;
         m)
             SS_MODULE=$OPTARG;;
+	n)
+ 	    KCP_MODULE=$OPTARG;;
         k)
             KCP_CONFIG=$OPTARG;;
         x)
@@ -18,9 +21,11 @@ while getopts "s:m:k:x" OPT; do
     esac
 done
 
+echo -e "\033[32mKCPINFO: $KCP_FLAG $KCP_CONFIG......\033[0m"
+
 if [ "$KCP_FLAG" == "true" ] && [ "$KCP_CONFIG" != "" ]; then
     echo -e "\033[32mStarting kcptun......\033[0m"
-    kcptun $KCP_CONFIG 2>&1 &
+    $KCP_MODULE $KCP_CONFIG 2>&1 &
 else
     echo -e "\033[33mKcptun not started......\033[0m"
 fi

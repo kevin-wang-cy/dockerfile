@@ -1,4 +1,5 @@
 # Run on the server side, make sure 28666/udp and 28777/tcp is allow in your VPC's firewall
+```
 docker run -dt --name socketproxy-server \
 	-p 28777:28777 -p 28666:28666/udp \
 	kevinwangcy/upchain:socketproxy-3.0.6-20170329 \
@@ -7,8 +8,10 @@ docker run -dt --name socketproxy-server \
 	-n "kcptun-server" \
 	-k "-l :28666 -t 127.0.0.1:28777 --crypt none --nocomp --mtu 1440 --mode fast --dscp 46 -sndwnd 8000" \
 	-x
+```
 
-# try removing the -d parameter from above if the DNS doesn't work properly
+# Try removing the -d parameter from above if the DNS doesn't work properly
+```
 docker run -dt --name socketproxy-server \
 	-p 28777:28777 -p 28666:28666/udp \
 	kevinwangcy/upchain:socketproxy-3.0.6-20170329 \
@@ -17,8 +20,10 @@ docker run -dt --name socketproxy-server \
 	-n "kcptun-server" \
 	-k "-l :28666 -t 127.0.0.1:28777 --crypt none --nocomp --mtu 1440 --mode fast --dscp 46 -sndwnd 8000" \
 	-x
+```
 
 # Run on your client host side.
+```
 mkdir -p /var/log/socketproxyps
 
 docker run -dt --name socketproxy-local \
@@ -30,8 +35,10 @@ docker run -dt --name socketproxy-local \
 	-n "kcptun-client" \
 	-k "-l 127.0.0.1:28777 -r <your VPS's ip address>:28666 --crypt none --nocomp --mtu 1440 --mode fast --dscp 46 -sndwnd 300 -rcvwnd 8000 -conn 12" \
 	-x
+```
 
-# define proxy.pac to use your proxy, maintain domain array to exclude those domains bypass proxy
+# Define proxy.pac to use your proxy, maintain domain array to exclude those domains bypass proxy
+```
 var domains = {
     "cuaa.net":0, "vipcn.com":0
 };
@@ -71,5 +78,5 @@ function FindProxyForURL(url, host) {
     return "SOCKS5 <client host ip address>:8888; SOCKS <client host ip address>:8888";
 }
 
-
+```
 
